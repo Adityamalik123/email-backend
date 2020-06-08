@@ -20,11 +20,13 @@ router.get('/stats', function (req, res) {
             return sendgrid.campaignStats(i.payload.sgCampaignId).then((resp) => {
                 return Promise.resolve({
                     id: i.payload.sgCampaignId,
+                    subject: i.payload.subject,
                     data: _.get(resp, 'data.results[0].stats') || {}
                 })
             }, () => {
                 return Promise.resolve({
                     id: i.payload.sgCampaignId,
+                    subject: i.payload.subject,
                     data: {}
                 })
             })

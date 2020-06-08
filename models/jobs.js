@@ -100,6 +100,10 @@ const getAllJobsByUserId = (userId) => {
     return Job.findAll({where: {userId}});
 };
 
+const getData = (userId, name) => {
+    return Job.findAll({where: {name, userId}});
+};
+
 const addJob = (data) => {
     getExecutionTime(data);
     data.nextExecutionTime = moment().toString();
@@ -140,5 +144,6 @@ module.exports = {
     addJob,
     updateAndGetToBeScheduledJob,
     updateAndGetToBeUploadedJob,
-    getAllJobsByUserId
+    getAllJobsByUserId,
+    getData
 };

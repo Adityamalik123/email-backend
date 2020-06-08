@@ -40,6 +40,10 @@ const contactUploadStatus = (id) => {
     return instance.get(`/contacts/imports/${id}`, {headers})
 };
 
+const campaignStats = (id) => {
+    return instance.get(`/stats/singlesends/${id}`, {headers})
+};
+
 module.exports = {
     createList,
     createCampaign,
@@ -48,5 +52,6 @@ module.exports = {
     addUpdateContacts,
     contactUploadStatus,
     deleteContacts,
-    searchContacts
+    searchContacts,
+    campaignStats
 };

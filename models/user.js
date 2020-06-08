@@ -18,8 +18,10 @@ const userSchema = mongoose.Schema({
     }
 });
 
+// Indexes
 userSchema.index({userId: 1});
 
+// DB Object
 let user = db.model('user', userSchema, 'user');
 
 const verify = function (userId, password) {

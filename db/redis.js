@@ -2,6 +2,7 @@
 const config = require('../config.js');
 let Redis = require('ioredis');
 
+// Redis client object
 const redisClient = new Redis(config.REDIS.PORT, config.REDIS.HOST);
 
 redisClient.on('connect', () => {

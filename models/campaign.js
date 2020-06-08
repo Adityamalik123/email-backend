@@ -4,6 +4,7 @@ const db = require('../db/mongo').notification;
 const mongoose = require('../db/mongo').mongoose;
 const sendgrid = require('../utils/sendgrid');
 
+// Schema -
 const campaignSchema = mongoose.Schema({
     userId: {
         required: true,
@@ -35,8 +36,10 @@ const campaignSchema = mongoose.Schema({
     }
 });
 
+// Indexes
 campaignSchema.index({userId: 1});
 
+// Db Object
 const Campaign = db.model('campaign', campaignSchema, 'campaign');
 
 const listAll = (userId) => {

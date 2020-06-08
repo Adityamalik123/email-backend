@@ -2,6 +2,7 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 const db = require('../db/mongo').notification;
 const mongoose = require('../db/mongo').mongoose;
 
+// Schema -
 const audienceSchema = mongoose.Schema({
     userId: String,
     name: String,
@@ -27,8 +28,10 @@ audienceSchema.index({_id: 1, audienceId: 1, userId: 1});
 
 audienceSchema.plugin(mongoosePaginate);
 
+// DB Object
 let Audiences = db.model('audience', audienceSchema, 'audience');
 
+// CRUD Operations for Audience
 function getData (userId, audienceId, recordId, size = 1000) {
     let record = {_id: {$gt: recordId || '3ad897280000000000000000'}, userId, audienceId};
     return Audiences.find(record).hint({'_id': 1, 'audienceId': 1, 'userId': 1}).limit(size).lean();

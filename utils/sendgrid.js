@@ -8,10 +8,13 @@ const headers = {
     'Content-Type': 'application/json'
 };
 
+// Send grid CRUD - Campaign, List, Contacts
+
 const createList = (name) => {
     return instance.post('/lists', {"name": name}, {headers})
 };
 
+// Campaign -
 const createCampaign = (name) => {
     return instance.post('/singlesends', {"name": name}, {headers})
 };
@@ -24,6 +27,7 @@ const scheduleCampaign = (id, body) => {
     return instance.put(`/singlesends/${id}/schedule`, body, {headers})
 };
 
+// Contacts -
 const addUpdateContacts = (body) => {
     return instance.put('/contacts', body, {headers})
 };
@@ -40,6 +44,7 @@ const contactUploadStatus = (id) => {
     return instance.get(`/contacts/imports/${id}`, {headers})
 };
 
+// Insights -
 const campaignStats = (id) => {
     return instance.get(`/stats/singlesends/${id}`, {headers})
 };

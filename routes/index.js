@@ -18,19 +18,31 @@ let generateKey = function() {
     return sha.digest('hex');
 };
 
+/**
+ * This is the router to log in
+ */
+
 router.post('/login', function(req, res) {
     if (!req.body.userId || !req.body.password) {
         return res.publish(false, 'id or pass not present', {});
     }
     user.verify(req.body.userId, req.body.password).then((data) => {
         const xid = generateKey();
+        let userDetails = {
+            name: data.name,
+            userId: data.userId
+        };
         res.cookie('xid', xid, { maxAge: 86400000, httpOnly: true });
-        redisClient.set(xid, JSON.stringify(data), redis.print);
-        res.publish(true, 'user found', data);
+        redisClient.set(xid, JSON.stringify(userDetails), redis.print);
+        res.publish(true, 'user found', userDetails);
     }, () => {
         res.publish(false, 'user not found', {});
     });
 });
+
+/**
+ * This is the router for un-subscribing from a campaign
+ */
 
 router.get('/unsubscribe/:data', function(req, res) {
     res.render(path.join(__dirname, "../public/unsubscribe"), {

@@ -20,10 +20,13 @@ const audienceMetadataSchema = mongoose.Schema({
     }
 });
 
+// Indexes
 audienceMetadataSchema.index({userId: 1});
 
+// DB Object
 let AudienceMetadata = db.model('audienceMetadata', audienceMetadataSchema, 'audienceMetadata');
 
+// CRUD for metadata
 const saveMeta = function (doc) {
     const newAudienceMetaData = new AudienceMetadata(doc);
     return newAudienceMetaData.save();

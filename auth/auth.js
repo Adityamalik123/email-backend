@@ -2,6 +2,7 @@
 let redis = require('redis');
 let redisClient = require('../db/redis').redisClient;
 
+// Middleware
 let user = function (xid, callback) {
     if (!xid) {
         return callback('error');

@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 let redisClient = require('../db/redis').redisClient;
 
+/**
+ * User Info
+ */
+
 router.get('/getLoggedInUser', function(req, res) {
     res.publish(true, "success", req.user);
 });

@@ -5,6 +5,10 @@ const campaign = require('../models/campaign');
 const {addJob, getData} = require('../models/jobs');
 const sendgrid = require('../utils/sendgrid');
 
+/**
+ * CRUD and Stats API's -
+ */
+
 router.get('/getList', function (req, res) {
     campaign.listAll(req.user.userId).then(data => {
         res.publish(true, 'Success', data);
@@ -53,6 +57,10 @@ router.post('/createOrUpdate', function (req, res) {
         res.publish(false, 'False', err);
     });
 });
+
+/**
+ * Add Job router - This will push the job in MySql
+ */
 
 router.post('/send-notification', function (req, res) {
     sendgrid.createCampaign(req.body.name).then((resp) => {

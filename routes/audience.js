@@ -22,6 +22,10 @@ let randomString = function (length, chars) {
     return result;
 };
 
+/**
+ * CRUD -
+ */
+
 router.get('/getMeta', function(req, res) {
     audienceMetadata.getMeta(req.user.userId).then((data) => {
         res.publish(true, 'Found AudienceMeta', data);
@@ -54,6 +58,10 @@ router.get('/getMetaById/:audienceId', function(req, res) {
     });
 });
 
+/**
+ * File Link Generation
+ */
+
 router.post('/upload-link', upload.single('file'), function(req, res) {
     let ext = req.file.originalname && req.file.originalname.lastIndexOf(".") !== -1 ? req.file.originalname.substring(req.file.originalname.lastIndexOf(".") + 1) : "";
     let name = randomString(12, "aA#") + (new Date().getTime()) + "." + ext;
@@ -65,6 +73,10 @@ router.post('/upload-link', upload.single('file'), function(req, res) {
     });
     res.send({url: config.scheme + "://" + req.hostname + "/api/backend/" + name});
 });
+
+/**
+ * Upload Audience Data
+ */
 
 router.post('/upload-data', function(req, res) {
     pushToTable(req.user.userId, req.body.url, req.body.audienceId);

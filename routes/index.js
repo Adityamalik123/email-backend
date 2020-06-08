@@ -2,6 +2,11 @@ var express = require('express');
 var router = express.Router();
 let redis = require('redis');
 let crypto = require('crypto');
+var path = require('path');
+
+const {searchContacts, deleteContacts} = require('../utils/sendgrid');
+const {updateRecord} = require('../models/audience');
+const config = require('../config.js');
 
 let redisClient = require('../db/redis').redisClient;
 const user = require('../models/user');
@@ -25,6 +30,51 @@ router.post('/login', function(req, res) {
     }, () => {
         res.publish(false, 'user not found', {});
     });
+});
+
+router.get('/unsubscribe/:data', function(req, res) {
+    res.render(path.join(__dirname, "../public/unsubscribe"), {
+        data: req.params.data,
+        hostname: req.hostname,
+        scheme: config.scheme,
+        email: req.query.email
+    });
+    try {
+        const data = JSON.parse(Buffer.from(decodeURIComponent(req.params.data), 'base64').toString());
+         searchContacts({ "query": `email LIKE '${req.query.email}' AND CONTAINS(list_ids, '${data.listId}')` }).then((resp) => {
+            if (resp.data && resp.data.result && resp.data.result.length > 0) {
+                deleteContacts(resp.data.result[0].id).then(() => {
+                    updateRecord(data.userId, data.audienceId, req.query.email, data.campaignId).catch((e) => {
+                        console.log(e);
+                    });
+                }, (e) => {
+                    console.log(e);
+                })
+            }
+        }, (e) => {
+            console.log(e);
+        });
+    } catch (e) {
+        console.log(e, 'err');
+    }
+});
+
+router.get('/resubscribe/:data', function(req, res) {
+    res.render(path.join(__dirname, "../public/resubscribe"), {
+        email: req.query.email
+    });
+    try {
+        // TODO - Add Logic
+        // const data = JSON.parse(Buffer.from(decodeURIComponent(req.params.data), 'base64').toString());
+        // console.log(data, 'data')
+        //  addUpdateContacts({list_ids:[data.listId], contacts}).then((res) => {
+        //      // Mark subscribed in db
+        // }, (e) => {
+        //     console.log(JSON.stringify(e), 'Contacts API Issue SG');
+        // });
+    } catch (e) {
+        console.log(e, 'err');
+    }
 });
 
 module.exports = router;

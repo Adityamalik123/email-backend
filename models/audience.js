@@ -5,9 +5,12 @@ const mongoose = require('../db/mongo').mongoose;
 const audienceSchema = mongoose.Schema({
     userId: String,
     name: String,
-    listId: String,
     audienceId: String,
     email: String,
+    unsubscribe: {
+        type: Array,
+        default: []
+    },
     updated: {
         type: Date,
         default: Date.now
@@ -18,22 +21,17 @@ const audienceSchema = mongoose.Schema({
     }
 }, {strict: true});
 
+audienceSchema.index({audienceId: 1, unsubscribe: 1});
 audienceSchema.index({userId: 1, audienceId: 1, email: 1});
-audienceSchema.index({userId: 1, listId: 1, email: 1});
+audienceSchema.index({_id: 1, audienceId: 1, userId: 1});
 
 audienceSchema.plugin(mongoosePaginate);
 
 let Audiences = db.model('audience', audienceSchema, 'audience');
 
 function getData (userId, audienceId, recordId, size = 1000) {
-    let record = {
-        userId,
-        audienceId
-    };
-    if (recordId) {
-        record._id = {'$gt': recordId};
-    }
-    return Audiences.find(record).sort({'_id': 1}).limit(size).lean();
+    let record = {_id: {$gt: recordId || '3ad897280000000000000000'}, userId, audienceId};
+    return Audiences.find(record).hint({'_id': 1, 'audienceId': 1, 'userId': 1}).limit(size).lean();
 }
 
 const fetchRecords = function (userId, audienceId, page, limit) {
@@ -49,6 +47,11 @@ const fetchRecords = function (userId, audienceId, page, limit) {
     });
 };
 
+const updateRecord = function (userId, audienceId, email, campaignId) {
+    const query = {userId, audienceId, email};
+    return Audiences.findOneAndUpdate(query, { $push: { unsubscribe: campaignId}}).lean();
+};
+
 const bulkRecordPush = (records) => {
     return Audiences.insertMany(records);
 };
@@ -56,5 +59,6 @@ const bulkRecordPush = (records) => {
 module.exports = {
     fetchRecords,
     bulkRecordPush,
-    getData
+    getData,
+    updateRecord
 };

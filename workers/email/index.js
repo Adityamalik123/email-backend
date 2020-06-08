@@ -1,8 +1,17 @@
+const config = require('../../config.js');
 const {codeFromJobStatus, nextExecution} = require('../../utils/utils');
 const {scheduleCampaign, updateCampaign} = require('../../utils/sendgrid');
 
 const run = async (job) => {
     let payload = job.payload;
+    const encodedEmailData = encodeURIComponent(Buffer.from(JSON.stringify({
+        listId: payload.listId,
+        sgCampaignId: payload.sgCampaignId,
+        audienceId: payload.audienceId,
+        campaignId: job.name,
+        userId: payload.userId
+    })).toString('base64'));
+    payload.content = payload.content.concat(`<br/><a href="{{{unsubscribe}}}">Click here to unsubscribe.</a>`);
     const data = {
         "send_to": {
             "list_ids": [payload.listId]
@@ -10,7 +19,7 @@ const run = async (job) => {
         "email_config": {
             "subject": payload.subject,
             "html_content": payload.content,
-            "custom_unsubscribe_url": "http://test.com",
+            "custom_unsubscribe_url": `${config.scheme}://${config.HOST}/api/backend/unsubscribe/${encodedEmailData}?email={{email}}`,
             "sender_id": 861360
         }
     };

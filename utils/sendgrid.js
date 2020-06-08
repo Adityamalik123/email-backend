@@ -28,6 +28,14 @@ const addUpdateContacts = (body) => {
     return instance.put('/contacts', body, {headers})
 };
 
+const deleteContacts = (id) => {
+    return instance.delete(`/contacts?ids=${id}`, {headers})
+};
+
+const searchContacts = (body) => {
+    return instance.post('/contacts/search', body, {headers})
+};
+
 const contactUploadStatus = (id) => {
     return instance.get(`/contacts/imports/${id}`, {headers})
 };
@@ -38,5 +46,7 @@ module.exports = {
     updateCampaign,
     scheduleCampaign,
     addUpdateContacts,
-    contactUploadStatus
+    contactUploadStatus,
+    deleteContacts,
+    searchContacts
 };

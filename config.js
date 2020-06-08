@@ -5,6 +5,7 @@ let config;
 config = {
     name: shortid.generate(),
     scheme: 'http',
+    HOST: 'localhost',
     MYSQL: {
         USER: 'root',
         PASSWORD: 'password',

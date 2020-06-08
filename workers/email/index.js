@@ -1,9 +1,15 @@
 const config = require('../../config.js');
 const {codeFromJobStatus, nextExecution} = require('../../utils/utils');
-const {scheduleCampaign, updateCampaign} = require('../../utils/sendgrid');
+const {checkCronValidity} = require('../../models/jobs');
+const {scheduleCampaign, updateCampaign, createCampaign} = require('../../utils/sendgrid');
 
 const run = async (job) => {
-    let payload = job.payload;
+    const resp = await createCampaign(job.name);
+    let payload = {
+        ...job.payload,
+        sgCampaignId: resp.data.id
+    };
+    job.update({payload});
     const encodedEmailData = encodeURIComponent(Buffer.from(JSON.stringify({
         listId: payload.listId,
         sgCampaignId: payload.sgCampaignId,
@@ -29,13 +35,21 @@ const run = async (job) => {
 };
 
 const updateCheckPoint = (job) => {
-    const executionTime = nextExecution(job.schedule, job.timezone, job.executionTime);
-    const status = job.schedule === '@once' ? codeFromJobStatus('COMPLETED') : codeFromJobStatus('PENDING-SG');
+    let executionTime = nextExecution(job.schedule, job.timezone, job.executionTime);
+    let status = codeFromJobStatus('COMPLETED');
+    if (job.schedule !== '@once') {
+        executionTime = checkCronValidity(job.options, executionTime) ? null : executionTime;
+        if (executionTime !== null) {
+            status = codeFromJobStatus('PENDING-SG');
+        }
+    }
     job.update({
         checkpoint: 'NONE',
         lastExecutionTime: job.nextExecutionTime,
+        nextExecutionTime: executionTime,
         status,
         executionTime,
+        nextExecution,
         executionCount: job.executionCount + 1
     });
     console.log('Updated Checkpoint (Email)');

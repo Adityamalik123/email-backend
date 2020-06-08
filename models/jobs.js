@@ -104,6 +104,13 @@ const getData = (userId, name) => {
     return Job.findAll({where: {name, userId}});
 };
 
+const stopJob = (userId, id) => {
+    const query = `
+        UPDATE jobs SET status = ${codeFromJobStatus('PAUSED')}
+        WHERE id = "${id}" AND userId = "${userId}"`;
+    return db.query(query);
+};
+
 const addJob = (data) => {
     getExecutionTime(data);
     data.nextExecutionTime = moment().toString();
@@ -145,5 +152,7 @@ module.exports = {
     updateAndGetToBeScheduledJob,
     updateAndGetToBeUploadedJob,
     getAllJobsByUserId,
-    getData
+    getData,
+    checkCronValidity,
+    stopJob
 };

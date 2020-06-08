@@ -63,7 +63,7 @@ router.post('/createOrUpdate', function (req, res) {
  */
 
 router.post('/send-notification', function (req, res) {
-    sendgrid.createCampaign(req.body.name).then((resp) => {
+    try {
         addJob({
             name: req.body.campaignId,
             displayName: `Notification - ${req.body.campaignId}`,
@@ -75,15 +75,15 @@ router.post('/send-notification', function (req, res) {
                 listId: req.body.listId,
                 userId: req.user.userId,
                 audienceId: req.body.audienceId,
-                sgCampaignId: resp.data.id,
                 subject: req.body.subject,
                 content: req.body.content,
-            }
+            },
+            options: req.body.options
         });
         res.publish(true, 'Success', {});
-    }).catch((e) => {
+    } catch(e) {
         res.publish(false, 'False', e.message);
-    });
+    }
 });
 
 module.exports = router;

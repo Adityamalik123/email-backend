@@ -14,4 +14,12 @@ router.get('/getList', function(req, res) {
     });
 });
 
+router.get('/stopJob', function(req, res) {
+    jobs.stopJob(req.user.userId, req.query.id).then((data) => {
+        res.publish(true, 'data present', data);
+    }, (e) => {
+        res.publish(false, 'data not found', {});
+    });
+});
+
 module.exports = router;

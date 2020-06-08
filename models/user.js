@@ -36,7 +36,7 @@ const verify = function (userId, password) {
     });
 };
 
-// bcrypt.hash('Aditya', 10).then(function(hash) {
+// bcrypt.hash('password@1', 10).then(function(hash) {
 //     console.log(hash, 'hash')
 // });
 
